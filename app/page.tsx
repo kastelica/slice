@@ -1,9 +1,8 @@
 import { Calculator } from "@/components/calculator";
-
-export const dynamic = "force-dynamic";
 import { ClaimForm } from "@/components/claim-form";
 import { Explainer } from "@/components/explainer";
 import { Hero } from "@/components/hero";
+import { Ideas } from "@/components/ideas";
 import { Ordinance } from "@/components/ordinance";
 import { SiteFooter } from "@/components/site-footer";
 import { getClaimCount } from "@/lib/claims";
@@ -13,6 +12,8 @@ import {
   readMode,
   readNational,
 } from "@/lib/query";
+
+export const dynamic = "force-dynamic";
 
 export default async function Home({ searchParams }: PageProps<"/">) {
   const params = await searchParams;
@@ -31,6 +32,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
       </a>
       <Hero />
       <main className="mt-16 flex flex-col gap-20 pb-6 sm:mt-20 sm:gap-24">
+        <Ideas />
         <Calculator
           mode={readMode(params)}
           local={readLocal(params)}
