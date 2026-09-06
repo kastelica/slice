@@ -1,11 +1,26 @@
 import { Calculator } from "@/components/calculator";
+
+export const dynamic = "force-dynamic";
 import { ClaimForm } from "@/components/claim-form";
 import { Explainer } from "@/components/explainer";
 import { Hero } from "@/components/hero";
 import { Ordinance } from "@/components/ordinance";
 import { SiteFooter } from "@/components/site-footer";
+import { getClaimCount } from "@/lib/claims";
+import {
+  readClaimFlash,
+  readLocal,
+  readMode,
+  readNational,
+} from "@/lib/query";
 
-export default function Home() {
+export default async function Home({ searchParams }: PageProps<"/">) {
+  const params = await searchParams;
+  const claims = await getClaimCount().catch(() => ({
+    count: 0,
+    store: "demo" as const,
+  }));
+
   return (
     <div className="home-dusk mx-auto w-full max-w-3xl px-5 sm:px-8">
       <a
@@ -16,8 +31,16 @@ export default function Home() {
       </a>
       <Hero />
       <main className="mt-16 flex flex-col gap-20 pb-6 sm:mt-20 sm:gap-24">
-        <Calculator />
-        <ClaimForm />
+        <Calculator
+          mode={readMode(params)}
+          local={readLocal(params)}
+          national={readNational(params)}
+        />
+        <ClaimForm
+          count={claims.count}
+          store={claims.store}
+          flash={readClaimFlash(params)}
+        />
         <Ordinance />
         <Explainer />
       </main>

@@ -5,8 +5,6 @@ import {
   calculateLocal,
   calculateNational,
   FEE_PRESETS,
-  LOCAL_DEFAULTS,
-  NATIONAL_DEFAULTS,
   PLACE_PRESETS,
   SIZE_PRESETS,
   type CalculatorMode,
@@ -15,12 +13,23 @@ import {
   type NationalInputs,
 } from "@/lib/calculator";
 import { formatCompactUsd, formatCount, formatUsd } from "@/lib/format";
+import { localHref, nationalHref } from "@/lib/query";
 import { SectionLabel } from "@/components/section-label";
 
-export function Calculator() {
-  const [mode, setMode] = useState<CalculatorMode>("local");
-  const [local, setLocal] = useState<LocalInputs>(LOCAL_DEFAULTS);
-  const [national, setNational] = useState<NationalInputs>(NATIONAL_DEFAULTS);
+type CalculatorProps = {
+  mode: CalculatorMode;
+  local: LocalInputs;
+  national: NationalInputs;
+};
+
+export function Calculator({
+  mode: initialMode,
+  local: initialLocal,
+  national: initialNational,
+}: CalculatorProps) {
+  const [mode, setMode] = useState<CalculatorMode>(initialMode);
+  const [local, setLocal] = useState<LocalInputs>(initialLocal);
+  const [national, setNational] = useState<NationalInputs>(initialNational);
 
   const localResult = useMemo(() => calculateLocal(local), [local]);
   const nationalResult = useMemo(() => calculateNational(national), [national]);
@@ -44,11 +53,13 @@ export function Calculator() {
       >
         <ModeTab
           active={mode === "local"}
+          href={localHref(local)}
           onClick={() => setMode("local")}
           label="Local host"
         />
         <ModeTab
           active={mode === "national"}
+          href={nationalHref(national)}
           onClick={() => setMode("national")}
           label="National sketch"
         />
@@ -79,25 +90,30 @@ export function Calculator() {
 
 function ModeTab({
   active,
+  href,
   onClick,
   label,
 }: {
   active: boolean;
+  href: string;
   onClick: () => void;
   label: string;
 }) {
   return (
-    <button
-      type="button"
+    <a
+      href={href}
       role="tab"
       aria-selected={active}
-      onClick={onClick}
+      onClick={(event) => {
+        event.preventDefault();
+        onClick();
+      }}
       className={`rounded-full px-3.5 py-1.5 text-sm transition-colors ${
         active ? "bg-ink text-night" : "text-mute hover:text-ink"
       }`}
     >
       {label}
-    </button>
+    </a>
   );
 }
 
@@ -128,6 +144,7 @@ function LocalPanel({
           {SIZE_PRESETS.map((preset) => (
             <Chip
               key={preset.id}
+              href={localHref({ ...value, megawatts: preset.megawatts })}
               active={value.megawatts === preset.megawatts}
               onClick={() => patch({ megawatts: preset.megawatts })}
               label={preset.label}
@@ -149,35 +166,40 @@ function LocalPanel({
       <Fieldset legend="Host fee">
         <div className="mb-3 flex gap-2">
           <FeeModeButton
+            href={localHref({ ...value, feeMode: "per_mw" })}
             active={value.feeMode === "per_mw"}
             onClick={() => patch({ feeMode: "per_mw" })}
             label="$ / MW-year"
           />
           <FeeModeButton
+            href={localHref({ ...value, feeMode: "percent_power" })}
             active={value.feeMode === "percent_power"}
             onClick={() => patch({ feeMode: "percent_power" })}
             label="% of power spend"
           />
         </div>
         <PresetRow>
-          {FEE_PRESETS.map((preset) => (
-            <Chip
-              key={preset.id}
-              active={isFeePresetActive(value, preset.feeMode, preset)}
-              onClick={() =>
-                patch({
-                  feeMode: preset.feeMode,
-                  ...(preset.feePerMwYear != null
-                    ? { feePerMwYear: preset.feePerMwYear }
-                    : {}),
-                  ...(preset.feePercent != null
-                    ? { feePercent: preset.feePercent }
-                    : {}),
-                })
-              }
-              label={preset.label}
-            />
-          ))}
+          {FEE_PRESETS.map((preset) => {
+            const next = {
+              ...value,
+              feeMode: preset.feeMode,
+              ...(preset.feePerMwYear != null
+                ? { feePerMwYear: preset.feePerMwYear }
+                : {}),
+              ...(preset.feePercent != null
+                ? { feePercent: preset.feePercent }
+                : {}),
+            };
+            return (
+              <Chip
+                key={preset.id}
+                href={localHref(next)}
+                active={isFeePresetActive(value, preset.feeMode, preset)}
+                onClick={() => patch(next)}
+                label={preset.label}
+              />
+            );
+          })}
         </PresetRow>
         {value.feeMode === "per_mw" ? (
           <NumberField
@@ -218,6 +240,11 @@ function LocalPanel({
           {PLACE_PRESETS.map((preset) => (
             <Chip
               key={preset.id}
+              href={localHref({
+                ...value,
+                residents: preset.residents,
+                households: preset.households,
+              })}
               active={
                 value.residents === preset.residents &&
                 value.households === preset.households
@@ -395,21 +422,26 @@ function PresetRow({ children }: { children: ReactNode }) {
 }
 
 function Chip({
+  href,
   active,
   onClick,
   label,
   hint,
 }: {
+  href: string;
   active: boolean;
   onClick: () => void;
   label: string;
   hint?: string;
 }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={active}
+    <a
+      href={href}
+      onClick={(event) => {
+        event.preventDefault();
+        onClick();
+      }}
+      aria-current={active ? "true" : undefined}
       className={`rounded-full border px-3 py-1.5 text-left text-sm transition-colors ${
         active
           ? "border-lamp bg-lamp/15 text-ink"
@@ -420,24 +452,29 @@ function Chip({
       {hint ? (
         <span className="ml-1.5 hidden text-xs text-mute sm:inline">{hint}</span>
       ) : null}
-    </button>
+    </a>
   );
 }
 
 function FeeModeButton({
+  href,
   active,
   onClick,
   label,
 }: {
+  href: string;
   active: boolean;
   onClick: () => void;
   label: string;
 }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={active}
+    <a
+      href={href}
+      onClick={(event) => {
+        event.preventDefault();
+        onClick();
+      }}
+      aria-current={active ? "true" : undefined}
       className={`rounded-full border px-3 py-1.5 text-sm ${
         active
           ? "border-ink bg-ink text-night"
@@ -445,7 +482,7 @@ function FeeModeButton({
       }`}
     >
       {label}
-    </button>
+    </a>
   );
 }
 
