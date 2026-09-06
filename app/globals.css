@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-instrument), ui-serif, Georgia, "Times New Roman",
+    serif;
+  --color-night: #0c0b09;
+  --color-panel: #14120f;
+  --color-ink: #efe8dc;
+  --color-mute: #9c9488;
+  --color-lamp: #c9a36a;
+  --color-rule: #2c2822;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-night);
+  background-image:
+    radial-gradient(ellipse 90% 46% at 50% -12%, #1c1812 0%, transparent 62%),
+    radial-gradient(
+      ellipse 70% 55% at 100% 115%,
+      rgba(201, 163, 106, 0.14),
+      transparent 58%
+    );
+  color: var(--color-ink);
+}
+
+.home-dusk {
+  position: relative;
+}
+
+.home-dusk::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: -1rem -1.5rem auto;
+  height: 22rem;
+  z-index: -1;
+  background: radial-gradient(
+    ellipse 80% 70% at 8% 20%,
+    rgba(239, 232, 220, 0.04),
+    transparent 62%
+  );
+}
+
+:focus-visible {
+  outline: 1px solid var(--color-lamp);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-lamp) 35%, transparent);
+  color: var(--color-ink);
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  appearance: textfield;
+}
