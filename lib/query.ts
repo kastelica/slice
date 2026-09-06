@@ -21,8 +21,10 @@ function first(values: SearchValues, key: string): string {
 }
 
 function num(values: SearchValues, key: string, fallback: number): number {
-  const raw = Number(first(values, key));
-  return Number.isFinite(raw) ? raw : fallback;
+  const raw = first(values, key).trim();
+  if (!raw) return fallback;
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) ? parsed : fallback;
 }
 
 export function readMode(values: SearchValues): CalculatorMode {

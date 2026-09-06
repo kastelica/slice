@@ -517,7 +517,7 @@ function NumberField({
           const next = event.target.valueAsNumber;
           onChange(Number.isFinite(next) ? next : 0);
         }}
-        className="mt-1.5 w-full rounded-lg border border-rule bg-night px-3 py-2.5 text-ink outline-none focus:border-lamp"
+        className="mt-1.5 w-full rounded-lg border border-rule bg-panel px-3 py-2.5 text-ink outline-none focus:border-lamp"
       />
       <span className="mt-1.5 block text-xs leading-relaxed text-mute">
         {hint}

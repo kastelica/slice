@@ -41,7 +41,7 @@ export function ClaimForm({ count, store, flash }: ClaimFormProps) {
           type="email"
           autoComplete="email"
           required
-          className="mt-1.5 w-full rounded-lg border border-rule bg-night px-3 py-2.5 text-ink outline-none focus:border-lamp"
+          className="mt-1.5 w-full rounded-lg border border-rule bg-panel px-3 py-2.5 text-ink outline-none focus:border-lamp"
         />
 
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -54,7 +54,7 @@ export function ClaimForm({ count, store, flash }: ClaimFormProps) {
               name="zip"
               type="text"
               autoComplete="postal-code"
-              className="mt-1.5 w-full rounded-lg border border-rule bg-night px-3 py-2.5 text-ink outline-none focus:border-lamp"
+              className="mt-1.5 w-full rounded-lg border border-rule bg-panel px-3 py-2.5 text-ink outline-none focus:border-lamp"
             />
           </div>
           <div>
@@ -66,7 +66,7 @@ export function ClaimForm({ count, store, flash }: ClaimFormProps) {
               name="city"
               type="text"
               autoComplete="address-level2"
-              className="mt-1.5 w-full rounded-lg border border-rule bg-night px-3 py-2.5 text-ink outline-none focus:border-lamp"
+              className="mt-1.5 w-full rounded-lg border border-rule bg-panel px-3 py-2.5 text-ink outline-none focus:border-lamp"
             />
           </div>
         </div>
